@@ -31,12 +31,15 @@ void cell :: init(int Nx, int Ny, int Nz)
 	}
 	num_sites = nx*ny*nz;
 	num_hole = 0;
-	real_num_hole = 0;
+	num_edge = 0;
 	hole_center.resize(num_sites);
+	edges.resize(num_sites);
 	hole_radius.resize(num_sites);
-	for(auto& m1:hole_center)
-		m1.resize(3);
-	real_hole_center.resize(0);
+	for(size_t t1=0; t1<num_sites; t1++)
+	{
+		hole_center[t1].resize(3);
+		edges[t1].resize(3);
+	}
 }
 
 void cell :: gen_hole(int ix, int iy, int iz, double rx, double ry, double rz, int if_initiate)
@@ -67,7 +70,7 @@ void cell :: gen_hole(int ix, int iy, int iz, double rx, double ry, double rz, i
 	}
 }
 
-void cell :: gen_hole_smooth(int ix, int iy, int iz, double rr)
+void cell :: gen_hole_sphere(int ix, int iy, int iz, double rr)
 {
 	int x_min = max(0.0, ix-ceil(rr));
 	int y_min = max(0.0, iy-ceil(rr));
@@ -91,24 +94,25 @@ void cell :: gen_hole_smooth(int ix, int iy, int iz, double rr)
 	}
 }
 
-void cell :: assign_hole_index(int ix, int iy, int iz, int index)
+void cell :: clear_hole_iter(int ix, int iy, int iz)
 {	
 	if(ix>=0 && iy>=0 && iz>=0 && ix<nx && iy<ny && iz<nz)
-	if(sites[ix][iy][iz].if_hole && sites[ix][iy][iz].hole_index != index)
+	if(sites[ix][iy][iz].if_hole && sites[ix][iy][iz].if_iter)
 	{
-		sites[ix][iy][iz].hole_index = index;
-		assign_hole_index(ix-1,iy,iz,index);
-		assign_hole_index(ix+1,iy,iz,index);
-		assign_hole_index(ix,iy-1,iz,index);
-		assign_hole_index(ix,iy+1,iz,index);
-		assign_hole_index(ix,iy,iz-1,index);
-		assign_hole_index(ix,iy,iz+1,index);
+		sites[ix][iy][iz].if_iter = 0;
+		clear_hole_iter(ix-1,iy,iz);
+		clear_hole_iter(ix+1,iy,iz);
+		clear_hole_iter(ix,iy-1,iz);
+		clear_hole_iter(ix,iy+1,iz);
+		clear_hole_iter(ix,iy,iz-1);
+		clear_hole_iter(ix,iy,iz+1);
 	}
 }
 
-void cell :: recover_hole_index(int ix, int iy, int iz)
+void cell :: clear_hole_iter()
 {
-	assign_hole_index(ix,iy,iz,temp_hole_index-1);
+	for(size_t t1=0; t1<num_hole; t1++)
+		clear_hole_iter(hole_center[t1][0],hole_center[t1][1],hole_center[t1][2]);
 }
 
 void cell :: activate_hole(double rmin, double dmin)
@@ -125,12 +129,12 @@ void cell :: activate_hole(double rmin, double dmin)
 		// big holes
 		if(hole_radius[t1] >= rmin)
 		{
-			activate_site(hole_center[t1][0],hole_center[t1][1],hole_center[t1][2]);
+			activate_hole(hole_center[t1][0],hole_center[t1][1],hole_center[t1][2]);
 		}
 		// sites close to wall
 		else if(hole_center[t1][0]<=dmin || hole_center[t1][1]<=dmin || hole_center[t1][2]<=dmin || hole_center[t1][0]>=nx-1-dmin || hole_center[t1][1]>=ny-1-dmin || hole_center[t1][2]>=nz-1-dmin)
 		{
-			activate_site(hole_center[t1][0],hole_center[t1][1],hole_center[t1][2]);
+			activate_hole(hole_center[t1][0],hole_center[t1][1],hole_center[t1][2]);
 		}
 		else
 		{
@@ -139,7 +143,7 @@ void cell :: activate_hole(double rmin, double dmin)
 			{
 				if(hole_radius[t2] >= rmin && dis(hole_center[t1],hole_center[t2]) <= hole_radius[t2] + dmin)
 				{
-					activate_site(hole_center[t1][0],hole_center[t1][1],hole_center[t1][2]);
+					activate_hole(hole_center[t1][0],hole_center[t1][1],hole_center[t1][2]);
 					break;
 				}
 			}
@@ -147,40 +151,128 @@ void cell :: activate_hole(double rmin, double dmin)
 	}
 }
 
-void cell :: activate_site(int ix, int iy, int iz)
+void cell :: activate_hole(int ix, int iy, int iz)
 {
 	if(ix>=0 && iy>=0 && iz>=0 && ix<nx && iy<ny && iz<nz)
 	if(sites[ix][iy][iz].if_hole && !sites[ix][iy][iz].if_hole_active)
 	{
 		sites[ix][iy][iz].if_hole_active = 1;
-//		cout<<"He "<<ix<<'\t'<<iy<<'\t'<<iz<<endl;
-		activate_site(ix-1,iy,iz);
-		activate_site(ix+1,iy,iz);
-		activate_site(ix,iy-1,iz);
-		activate_site(ix,iy+1,iz);
-		activate_site(ix,iy,iz-1);
-		activate_site(ix,iy,iz+1);
+		activate_hole(ix-1,iy,iz);
+		activate_hole(ix+1,iy,iz);
+		activate_hole(ix,iy-1,iz);
+		activate_hole(ix,iy+1,iz);
+		activate_hole(ix,iy,iz-1);
+		activate_hole(ix,iy,iz+1);
 	}
 }
 
-void cell :: hole_print(int ix, int iy, int iz, int if_initiate)
+void cell :: assign_edge(int ix, int iy, int iz)
 {
 	if(ix>=0 && iy>=0 && iz>=0 && ix<nx && iy<ny && iz<nz)
+	if(sites[ix][iy][iz].if_hole_active && !sites[ix][iy][iz].if_iter)
 	{
-	if(if_initiate)
+		sites[ix][iy][iz].if_iter = 1;
+		if(ix>=1 && iy>=1 && iz>=1 && ix<nx-1 && iy<ny-1 && iz<nz-1)
+		if(!sites[ix-1][iy][iz].if_hole_active || !sites[ix+1][iy][iz].if_hole_active || !sites[ix][iy-1][iz].if_hole_active || !sites[ix][iy+1][iz].if_hole_active || !sites[ix][iy][iz-1].if_hole_active || !sites[ix][iy][iz+1].if_hole_active)
+		{
+			sites[ix][iy][iz].if_edge = 1;
+		}
+		assign_edge(ix-1,iy,iz);
+		assign_edge(ix+1,iy,iz);
+		assign_edge(ix,iy-1,iz);
+		assign_edge(ix,iy+1,iz);
+		assign_edge(ix,iy,iz-1);
+		assign_edge(ix,iy,iz+1);
+	}
+	
+}
+
+void cell :: assign_edge()
+{
+	// clear edge info
+	for(size_t t1=0; t1<nx; t1++)
+	for(size_t t2=0; t2<ny; t2++)
+	for(size_t t3=0; t3<nz; t3++)
+		sites[t1][t2][t3].if_edge = 0;
+	
+	// clear if_iter info
+	clear_hole_iter();
+
+	// assign edge from hole
+	for(size_t t1=0; t1<num_hole; t1++)
 	{
-		temp_hole_index = sites[ix][iy][iz].hole_index+1;
+		assign_edge(hole_center[t1][0],hole_center[t1][1],hole_center[t1][2]);
 	}
-	if(sites[ix][iy][iz].if_hole && sites[ix][iy][iz].hole_index != temp_hole_index)
+	// assign edge from wall
+	for(size_t t1=0; t1<nx; t1++)
+	for(size_t t2=0; t2<ny; t2++)
 	{
-		sites[ix][iy][iz].hole_index = temp_hole_index;
-		cout<<ix<<'\t'<<iy<<'\t'<<iz<<endl;
-		hole_print(ix-1,iy,iz,0);
-		hole_print(ix+1,iy,iz,0);
-		hole_print(ix,iy-1,iz,0);
-		hole_print(ix,iy+1,iz,0);
-		hole_print(ix,iy,iz-1,0);
-		hole_print(ix,iy,iz+1,0);
+		if(!sites[t1][t2][0].if_hole)
+			sites[t1][t2][0].if_edge = 1;
+		if(!sites[t1][t2][nz-1].if_hole)
+			sites[t1][t2][nz-1].if_edge = 1;
 	}
+	for(size_t t1=0; t1<nx; t1++)
+	for(size_t t3=0; t3<nz; t3++)
+	{
+		if(!sites[t1][0][t3].if_hole)
+			sites[t1][0][t3].if_edge = 1;
+		if(!sites[t1][ny-1][t3].if_hole)
+			sites[t1][ny-1][t3].if_edge = 1;
 	}
+	for(size_t t2=0; t2<ny; t2++)
+	for(size_t t3=0; t3<nz; t3++)
+	{
+		if(!sites[0][t2][t3].if_hole)
+			sites[0][t2][t3].if_edge = 1;
+		if(!sites[nx-1][t2][t3].if_hole)
+			sites[nx-1][t2][t3].if_edge = 1;
+	}
+	clear_hole_iter();
+}
+
+void cell :: count_edge()
+{
+	num_edge = 0;
+	for(size_t t1=0; t1<nx; t1++)
+	for(size_t t2=0; t2<ny; t2++)
+	for(size_t t3=0; t3<nz; t3++)
+	if(sites[t1][t2][t3].if_edge)
+	{	
+		edges[num_edge][0] = t1;
+		edges[num_edge][1] = t2;
+		edges[num_edge][2] = t3;
+		num_edge++;
+	}
+}
+
+void cell :: print_edge()
+{
+	for(size_t t1=0; t1<num_edge; t1++)
+	{
+		cout<<"He "<<edges[t1][0]<<'\t'<<edges[t1][1]<<'\t'<<edges[t1][2]<<endl;
+	}
+}
+
+void cell :: print_hole(int ix, int iy, int iz)
+{
+	if(ix>=0 && iy>=0 && iz>=0 && ix<nx && iy<ny && iz<nz)
+	if(sites[ix][iy][iz].if_hole && !sites[ix][iy][iz].if_iter)
+	{
+		cout<<"He "<<ix<<'\t'<<iy<<'\t'<<iz<<endl;
+		sites[ix][iy][iz].if_iter = 1;
+		print_hole(ix-1,iy,iz);
+		print_hole(ix+1,iy,iz);
+		print_hole(ix,iy-1,iz);
+		print_hole(ix,iy+1,iz);
+		print_hole(ix,iy,iz-1);
+		print_hole(ix,iy,iz+1);
+	}
+}
+
+void cell :: print_hole()
+{
+	for(size_t t1=0; t1<num_hole; t1++)
+		print_hole(hole_center[t1][0],hole_center[t1][1],hole_center[t1][2]);
+	clear_hole_iter();
 }
