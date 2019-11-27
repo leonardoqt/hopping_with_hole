@@ -21,4 +21,4 @@ $(ODIR)/%.o : $(SDIR)/%.cpp $(DEPS) | $(ODIR)/.
 .PRECIOUS: %/.
 .PHONY: clean
 clean:
-	rm -rf *.x $(ODIR)
+	rm -rf *.x *.dat *.xyz $(ODIR)

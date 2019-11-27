@@ -11,12 +11,15 @@ int main()
 	chrono::high_resolution_clock::time_point now = chrono::high_resolution_clock::now();
 	srand(now.time_since_epoch().count());
 	cell a;
-	a.init(21,21,21);
-	a.gen_hole_sphere(10,10,0,4.6);
-	a.gen_hole_sphere(10,10,20,2.3);
-	a.activate_hole(2.4,1.3);
+	a.init(101,101,101);
+	a.gen_hole_rand(8000,5.01);
+	a.activate_hole(10,6.0);
 	a.assign_edge();
 	a.count_edge();
-	a.print_edge();
+	for(size_t t1=0; t1<100000; t1++)
+	{
+		a.hopping_run(1.0,0.0,1000);
+		cout<<t1<<'\t'<<a.count_fill()<<endl;
+	}
 	return 0;
 }
