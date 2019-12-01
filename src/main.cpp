@@ -48,11 +48,12 @@ int main()
 	cell1.activate_hole(act_big, act_dis);
 	cell1.assign_edge();
 	cell1.count_edge();
+	cell1.count_capacity();
 	output.open("diffuse.out");
 	for(size_t t1=0; t1<n_tot_set_run; t1++)
 	{
 		cell1.hopping_run(k_in,k_out,n_single_set_run);
-		output<<(t1+1)*n_single_set_run<<'\t'<<cell1.count_fill()<<endl;
+		output<<(t1+1)*n_single_set_run<<'\t'<<cell1.return_fill_percent()<<endl;
 	}
 	output.close();
 	occ.open("filled.out");

@@ -35,6 +35,7 @@ void cell :: init(int Nx, int Ny, int Nz)
 	num_hole = 0;
 	num_edge = 0;
 	num_fill = 0;
+	num_capacity = 0;
 	hole_center.resize(num_sites);
 	edges.resize(num_sites);
 	fills.resize(num_sites);
@@ -265,6 +266,17 @@ int cell :: count_edge()
 	return num_edge;
 }
 
+int cell :: count_capacity()
+{
+	num_capacity = 0;
+	for(size_t t1=0; t1<nx; t1++)
+	for(size_t t2=0; t2<ny; t2++)
+	for(size_t t3=0; t3<nz; t3++)
+	if(!sites[t1][t2][t3].if_edge && !sites[t1][t2][t3].if_hole)
+		num_capacity++;
+	return num_capacity;
+}
+
 void cell :: hopping_run(double k_ad, double k_rm)
 {	
 	int num_avail=num_edge+num_fill;
@@ -403,10 +415,16 @@ void cell :: hopping_run(double k_ad, double k_rm, int num_run)
 		hopping_run(k_ad, k_rm);
 }
 
-int cell :: count_fill()
+int cell :: return_fill()
 {
 	return num_fill;
 }
+
+double cell :: return_fill_percent()
+{
+	return num_fill/(double)num_capacity;
+}
+
 /*
 void cell :: print_fill()
 {

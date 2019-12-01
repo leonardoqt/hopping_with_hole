@@ -17,6 +17,7 @@ private:
 	int num_fill;										// number of filled sites
 	int num_hole;										// number of hole before/after merge
 	int num_edge;										// number of edge sites
+	int num_capacity;									// number of total to-be-filled sites
 	std::vector<std::vector<int> > hole_center;			// hole centers before merge
 	std::vector<std::vector<int> > edges;				// edge sites
 	std::vector<std::vector<int> > fills;				// edge sites
@@ -38,8 +39,10 @@ public:
 	void hopping_run(double k_ad, double k_rm, int num_run);
 	//
 	int  count_edge();
-	int  count_fill();
+	int  count_capacity();
 //	void print_fill();
+	int  return_fill();
+	double return_fill_percent();
 	void print_fill(std::ofstream& out);
 	void print_edge();
 	void print_hole(int ix, int iy, int iz);
