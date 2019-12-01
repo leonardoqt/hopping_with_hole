@@ -1,6 +1,6 @@
-11 11 11		# size of cell in x,y,z direction
-25 1.01		# number and size of small hole
-2  3.01		# number and size fo large hole
-2.0 2.0		# size of holes to be activated and distance to an activated holes to be activated
+101 101 101		# size of cell in x,y,z direction
+1000 3.01		# number and size of small hole
+10  15.01		# number and size fo large hole
+10.0 100.0		# size of holes to be activated and distance to an activated holes to be activated
 1.0 0.0			# probability of diffuse in and out
-1000 10000		# number of runs for each data collect, number of data collect times
+50000 10000		# number of runs for each data collect, number of data collect times
