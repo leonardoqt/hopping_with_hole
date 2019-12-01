@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <stdlib.h>
 #include <math.h>
 #include "cell.h"
@@ -172,6 +173,7 @@ void cell :: activate_hole(int ix, int iy, int iz)
 	if(ix>=0 && iy>=0 && iz>=0 && ix<nx && iy<ny && iz<nz)
 	if(sites[ix][iy][iz].if_hole && !sites[ix][iy][iz].if_hole_active)
 	{
+//		cout<<ix<<'\t'<<iy<<'\t'<<iz<<endl;
 		sites[ix][iy][iz].if_hole_active = 1;
 		activate_hole(ix-1,iy,iz);
 		activate_hole(ix+1,iy,iz);
@@ -405,12 +407,20 @@ int cell :: count_fill()
 {
 	return num_fill;
 }
-
+/*
 void cell :: print_fill()
 {
 	for(size_t t1=0; t1<num_fill; t1++)
 	{
 		cout<<"He "<<fills[t1][0]<<'\t'<<fills[t1][1]<<'\t'<<fills[t1][2]<<endl;
+	}
+}
+*/
+void cell :: print_fill(ofstream& out)
+{
+	for(size_t t1=0; t1<num_fill; t1++)
+	{
+		out<<fills[t1][0]<<'\t'<<fills[t1][1]<<'\t'<<fills[t1][2]<<endl;
 	}
 }
 

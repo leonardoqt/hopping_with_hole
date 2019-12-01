@@ -19,6 +19,8 @@ $(ODIR)/%.o : $(SDIR)/%.cpp $(DEPS) | $(ODIR)/.
 	mkdir -p $(patsubst %/.,%,$@)
 	
 .PRECIOUS: %/.
-.PHONY: clean
+.PHONY: clean clean_all
 clean:
-	rm -rf *.x *.dat *.xyz $(ODIR)
+	rm -rf *.x $(ODIR)
+clean_all:
+	rm -rf *.x *.dat *.xyz *.out $(ODIR)

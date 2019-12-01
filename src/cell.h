@@ -1,5 +1,6 @@
 #ifndef __CELL_FOR_CELL_WITH_HOLLOW__
 #define __CELL_FOR_CELL_WITH_HOLLOW__
+#include <fstream>
 #include <vector>
 #include "site.h"
 
@@ -38,7 +39,8 @@ public:
 	//
 	int  count_edge();
 	int  count_fill();
-	void print_fill();
+//	void print_fill();
+	void print_fill(std::ofstream& out);
 	void print_edge();
 	void print_hole(int ix, int iy, int iz);
 	void print_hole();
