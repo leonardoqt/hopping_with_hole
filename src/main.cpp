@@ -49,6 +49,9 @@ int main()
 	cell1.assign_edge();
 	cell1.count_edge();
 	cell1.count_capacity();
+	cout<<"Average hole size: "<<cell1.count_average_hole_size()<<endl;
+	cout<<"Capacity: "<<cell1.return_capacity()<<endl;
+	cout<<"Number of interface sites: "<<cell1.return_edge()<<endl;
 	output.open("diffuse.out");
 	for(size_t t1=0; t1<n_tot_set_run; t1++)
 	{

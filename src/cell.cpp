@@ -36,6 +36,8 @@ void cell :: init(int Nx, int Ny, int Nz)
 	num_edge = 0;
 	num_fill = 0;
 	num_capacity = 0;
+	num_disconnected_hole = 0;
+	num_site_hole = 0;
 	hole_center.resize(num_sites);
 	edges.resize(num_sites);
 	fills.resize(num_sites);
@@ -109,6 +111,22 @@ void cell :: gen_hole_rand(int num, double rr)
 		iy = rand()%ny;
 		iz = rand()%nz;
 		gen_hole_sphere(ix,iy,iz,rr);
+	}
+}
+
+void cell :: hole_iter_add_number_sites(int ix, int iy, int iz)
+{	
+	if(ix>=0 && iy>=0 && iz>=0 && ix<nx && iy<ny && iz<nz)
+	if(sites[ix][iy][iz].if_hole && !sites[ix][iy][iz].if_iter)
+	{
+		sites[ix][iy][iz].if_iter = 1;
+		num_site_hole++;
+		hole_iter_add_number_sites(ix-1,iy,iz);
+		hole_iter_add_number_sites(ix+1,iy,iz);
+		hole_iter_add_number_sites(ix,iy-1,iz);
+		hole_iter_add_number_sites(ix,iy+1,iz);
+		hole_iter_add_number_sites(ix,iy,iz-1);
+		hole_iter_add_number_sites(ix,iy,iz+1);
 	}
 }
 
@@ -277,6 +295,21 @@ int cell :: count_capacity()
 	return num_capacity;
 }
 
+double cell :: count_average_hole_size()
+{
+	num_disconnected_hole = 0;
+	num_site_hole = 0;
+	clear_hole_iter();
+	for(size_t t1=0; t1<num_hole; t1++)
+	if(!sites[hole_center[t1][0]][hole_center[t1][1]][hole_center[t1][2]].if_iter)
+	{
+		num_disconnected_hole++;
+		hole_iter_add_number_sites(hole_center[t1][0],hole_center[t1][1],hole_center[t1][2]);
+	}
+	clear_hole_iter();
+	return num_site_hole/(double)num_disconnected_hole;
+}
+
 void cell :: hopping_run(double k_ad, double k_rm)
 {	
 	int num_avail=num_edge+num_fill;
@@ -420,20 +453,21 @@ int cell :: return_fill()
 	return num_fill;
 }
 
+int cell :: return_capacity()
+{
+	return num_capacity;
+}
+
+int cell :: return_edge()
+{
+	return num_edge;
+}
+
 double cell :: return_fill_percent()
 {
 	return num_fill/(double)num_capacity;
 }
 
-/*
-void cell :: print_fill()
-{
-	for(size_t t1=0; t1<num_fill; t1++)
-	{
-		cout<<"He "<<fills[t1][0]<<'\t'<<fills[t1][1]<<'\t'<<fills[t1][2]<<endl;
-	}
-}
-*/
 void cell :: print_fill(ofstream& out)
 {
 	for(size_t t1=0; t1<num_fill; t1++)
