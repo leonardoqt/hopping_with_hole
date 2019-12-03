@@ -59,13 +59,16 @@ int main()
 	output.open("diffuse.out");
 	if(if_heatmap)
 		heatmap.open("heatmap.dat");
+	cout<<'['<<0<<'/'<<n_tot_set_run<<']'<<endl;
 	for(size_t t1=0; t1<n_tot_set_run; t1++)
 	{
 		cell1.hopping_run(k_in,k_out,n_single_set_run);
 		output<<(t1+1)*n_single_set_run<<'\t'<<cell1.return_fill_percent()<<endl;
 		if(if_heatmap)
-			cell1.print_heatmap(heatmap);
+			cell1.print_heatmap_z_half(heatmap);
+		cout<<"\e[A"<<'['<<t1+1<<'/'<<n_tot_set_run<<']'<<endl;
 	}
+	cout<<endl;
 	output.close();
 	if(if_heatmap)
 		heatmap.close();

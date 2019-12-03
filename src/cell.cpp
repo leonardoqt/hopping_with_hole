@@ -478,9 +478,9 @@ void cell :: print_fill(ofstream& out)
 
 void cell :: print_heatmap(ofstream& out)
 {
-	for(size_t t1=0; t1<nx; t1++)
-	for(size_t t2=0; t2<ny; t2++)
-	for(size_t t3=0; t3<nz; t3++)
+	for(size_t t1=1; t1<nx-1; t1++)
+	for(size_t t2=1; t2<ny-1; t2++)
+	for(size_t t3=1; t3<nz-1; t3++)
 	{
 		out<<t1<<'\t'<<t2<<'\t'<<t3<<'\t';
 		if(sites[t1][t2][t3].if_edge)
@@ -488,6 +488,23 @@ void cell :: print_heatmap(ofstream& out)
 		else if(sites[t1][t2][t3].if_hole)
 			out<<2<<endl;
 		else if(sites[t1][t2][t3].if_fill)
+			out<<1<<endl;
+		else
+			out<<0<<endl;
+	}
+}
+
+void cell :: print_heatmap_z_half(ofstream& out)
+{
+	for(size_t t1=0; t1<nx; t1++)
+	for(size_t t2=0; t2<ny; t2++)
+	{
+		out<<t1<<'\t'<<t2<<'\t';
+		if(sites[t1][t2][nz/2].if_edge)
+			out<<3<<endl;
+		else if(sites[t1][t2][nz/2].if_hole)
+			out<<2<<endl;
+		else if(sites[t1][t2][nz/2].if_fill)
 			out<<1<<endl;
 		else
 			out<<0<<endl;
