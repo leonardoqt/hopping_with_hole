@@ -374,7 +374,7 @@ void cell :: hopping_run(double k_ad, double k_rm)
 	else if(tmp >= num_edge)
 	{
 		tmp = tmp - num_edge;
-		ix0 = fills[tmp][0];iy0 = fills[tmp][1];iz0 = fills[tmp][2];
+		ix=ix0 = fills[tmp][0];iy=iy0 = fills[tmp][1];iz=iz0 = fills[tmp][2];
 		// index of new site
 		switch (xyz)
 		{
