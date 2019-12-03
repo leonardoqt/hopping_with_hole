@@ -18,6 +18,7 @@ int main()
 	ifstream input;
 	ofstream output;
 	ofstream occ;
+	ofstream heatmap;
 
 	int nx, ny, nz;
 	int n_big, n_small;
@@ -25,6 +26,7 @@ int main()
 	double act_big, act_dis;
 	double k_in, k_out;
 	int n_single_set_run, n_tot_set_run;
+	int if_heatmap;
 	string tmp;
 
 	input.open("diffuse.in");
@@ -40,6 +42,8 @@ int main()
 	getline(input,tmp);
 	input>>n_single_set_run>>n_tot_set_run;
 	getline(input,tmp);
+	input>>if_heatmap;
+	getline(input,tmp);
 	input.close();
 
 	cell1.init(nx,ny,nz);
@@ -53,12 +57,18 @@ int main()
 	cout<<"Capacity: "<<cell1.return_capacity()<<endl;
 	cout<<"Number of interface sites: "<<cell1.return_edge()<<endl;
 	output.open("diffuse.out");
+	if(if_heatmap)
+		heatmap.open("heatmap.dat");
 	for(size_t t1=0; t1<n_tot_set_run; t1++)
 	{
 		cell1.hopping_run(k_in,k_out,n_single_set_run);
 		output<<(t1+1)*n_single_set_run<<'\t'<<cell1.return_fill_percent()<<endl;
+		if(if_heatmap)
+			cell1.print_heatmap(heatmap);
 	}
 	output.close();
+	if(if_heatmap)
+		heatmap.close();
 	occ.open("filled.out");
 	cell1.print_fill(occ);
 	occ.close();

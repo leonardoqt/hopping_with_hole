@@ -50,6 +50,7 @@ public:
 	int return_capacity();
 	int return_edge();
 	void print_fill(std::ofstream& out);
+	void print_heatmap(std::ofstream& out);
 	void print_edge();
 	void print_hole(int ix, int iy, int iz);
 	void print_hole();

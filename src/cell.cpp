@@ -476,6 +476,24 @@ void cell :: print_fill(ofstream& out)
 	}
 }
 
+void cell :: print_heatmap(ofstream& out)
+{
+	for(size_t t1=0; t1<nx; t1++)
+	for(size_t t2=0; t2<ny; t2++)
+	for(size_t t3=0; t3<nz; t3++)
+	{
+		out<<t1<<'\t'<<t2<<'\t'<<t3<<'\t';
+		if(sites[t1][t2][t3].if_edge)
+			out<<3<<endl;
+		else if(sites[t1][t2][t3].if_hole)
+			out<<2<<endl;
+		else if(sites[t1][t2][t3].if_fill)
+			out<<1<<endl;
+		else
+			out<<0<<endl;
+	}
+}
+
 void cell :: print_edge()
 {
 	for(size_t t1=0; t1<num_edge; t1++)
