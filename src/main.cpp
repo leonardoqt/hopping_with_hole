@@ -46,7 +46,7 @@ int main()
 	getline(input,tmp);
 	input.close();
 
-	cell1.init(nx,ny,nz);
+	cell1.init(nx,ny,1);
 	cell1.gen_hole_rand(n_small, r_small);
 	cell1.gen_hole_rand(n_big, r_big);
 	cell1.activate_hole(act_big, act_dis);

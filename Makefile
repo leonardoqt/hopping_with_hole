@@ -9,7 +9,7 @@ DEPS  = $(shell ls $(SDIR)/*.h)
 SRC   = $(shell ls $(SDIR)/*.cpp)
 OBJ   = $(patsubst $(SDIR)/%.cpp,$(ODIR)/%.o,$(SRC))
 
-hopping.x : $(OBJ)
+hopping2.x : $(OBJ)
 	$(CXX) -o $@ $^ $(CFLAG)
 
 $(ODIR)/%.o : $(SDIR)/%.cpp $(DEPS) | $(ODIR)/.

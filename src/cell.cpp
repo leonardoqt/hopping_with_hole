@@ -71,10 +71,10 @@ void cell :: gen_hole(int ix, int iy, int iz, double rx, double ry, double rz, i
 			gen_hole(ix, iy-1, iz, rx, ry, rz,0);
 		if(rand()/(double)RAND_MAX < ry)
 			gen_hole(ix, iy+1, iz, rx, ry, rz,0);
-		if(rand()/(double)RAND_MAX < rz)
-			gen_hole(ix, iy, iz-1, rx, ry, rz,0);
-		if(rand()/(double)RAND_MAX < rz)
-			gen_hole(ix, iy, iz+1, rx, ry, rz,0);
+//		if(rand()/(double)RAND_MAX < rz)
+//			gen_hole(ix, iy, iz-1, rx, ry, rz,0);
+//		if(rand()/(double)RAND_MAX < rz)
+//			gen_hole(ix, iy, iz+1, rx, ry, rz,0);
 	}
 }
 
@@ -95,9 +95,9 @@ void cell :: gen_hole_sphere(int ix, int iy, int iz, double rr)
 
 	for(size_t t1=x_min; t1<x_max; t1++)
 	for(size_t t2=y_min; t2<y_max; t2++)
-	for(size_t t3=z_min; t3<z_max; t3++)
+	for(size_t t3=0; t3<1; t3++)
 	{
-		if((t1-ix)*(t1-ix)+(t2-iy)*(t2-iy)+(t3-iz)*(t3-iz) < rr*rr && !sites[t1][t2][t3].if_hole)
+		if((t1-ix)*(t1-ix)+(t2-iy)*(t2-iy) < rr*rr && !sites[t1][t2][t3].if_hole)
 			sites[t1][t2][t3].if_hole = 1;
 	}
 }
@@ -109,7 +109,7 @@ void cell :: gen_hole_rand(int num, double rr)
 	{
 		ix = rand()%nx;
 		iy = rand()%ny;
-		iz = rand()%nz;
+		iz = 0;
 		gen_hole_sphere(ix,iy,iz,rr);
 	}
 }
@@ -168,7 +168,7 @@ void cell :: activate_hole(double rmin, double dmin)
 			activate_hole(hole_center[t1][0],hole_center[t1][1],hole_center[t1][2]);
 		}
 		// sites close to wall
-		else if(hole_center[t1][0]<=dmin || hole_center[t1][1]<=dmin || hole_center[t1][2]<=dmin || hole_center[t1][0]>=nx-1-dmin || hole_center[t1][1]>=ny-1-dmin || hole_center[t1][2]>=nz-1-dmin)
+		else if(hole_center[t1][0]<=dmin || hole_center[t1][1]<=dmin || hole_center[t1][0]>=nx-1-dmin || hole_center[t1][1]>=ny-1-dmin)
 		{
 			activate_hole(hole_center[t1][0],hole_center[t1][1],hole_center[t1][2]);
 		}
@@ -209,8 +209,8 @@ void cell :: assign_edge(int ix, int iy, int iz)
 	if(sites[ix][iy][iz].if_hole_active && !sites[ix][iy][iz].if_iter)
 	{
 		sites[ix][iy][iz].if_iter = 1;
-		if(ix>=1 && iy>=1 && iz>=1 && ix<nx-1 && iy<ny-1 && iz<nz-1)
-		if(!sites[ix-1][iy][iz].if_hole_active || !sites[ix+1][iy][iz].if_hole_active || !sites[ix][iy-1][iz].if_hole_active || !sites[ix][iy+1][iz].if_hole_active || !sites[ix][iy][iz-1].if_hole_active || !sites[ix][iy][iz+1].if_hole_active)
+		if(ix>=1 && iy>=1 && ix<nx-1 && iy<ny-1)
+		if(!sites[ix-1][iy][iz].if_hole_active || !sites[ix+1][iy][iz].if_hole_active || !sites[ix][iy-1][iz].if_hole_active || !sites[ix][iy+1][iz].if_hole_active)
 		{
 			sites[ix][iy][iz].if_edge = 1;
 		}
@@ -218,8 +218,8 @@ void cell :: assign_edge(int ix, int iy, int iz)
 		assign_edge(ix+1,iy,iz);
 		assign_edge(ix,iy-1,iz);
 		assign_edge(ix,iy+1,iz);
-		assign_edge(ix,iy,iz-1);
-		assign_edge(ix,iy,iz+1);
+//		assign_edge(ix,iy,iz-1);
+//		assign_edge(ix,iy,iz+1);
 	}
 	
 }
@@ -241,14 +241,14 @@ void cell :: assign_edge()
 		assign_edge(hole_center[t1][0],hole_center[t1][1],hole_center[t1][2]);
 	}
 	// assign edge from wall
-	for(size_t t1=0; t1<nx; t1++)
-	for(size_t t2=0; t2<ny; t2++)
-	{
-		if(!sites[t1][t2][0].if_hole)
-			sites[t1][t2][0].if_edge = 1;
-		if(!sites[t1][t2][nz-1].if_hole)
-			sites[t1][t2][nz-1].if_edge = 1;
-	}
+//	for(size_t t1=0; t1<nx; t1++)
+//	for(size_t t2=0; t2<ny; t2++)
+//	{
+//		if(!sites[t1][t2][0].if_hole)
+//			sites[t1][t2][0].if_edge = 1;
+//		if(!sites[t1][t2][nz-1].if_hole)
+//			sites[t1][t2][nz-1].if_edge = 1;
+//	}
 	for(size_t t1=0; t1<nx; t1++)
 	for(size_t t3=0; t3<nz; t3++)
 	{
@@ -314,7 +314,7 @@ void cell :: hopping_run(double k_ad, double k_rm)
 {	
 	int num_avail=num_edge+num_fill;
 	int ix0,iy0,iz0,ix,iy,iz,xyz,tmp;
-	xyz = rand()%6;
+	xyz = rand()%4;
 	tmp = rand()%num_avail;
 	// try add atom from edge
 	if(tmp < num_edge && rand()/(double)RAND_MAX < k_ad)
@@ -374,7 +374,7 @@ void cell :: hopping_run(double k_ad, double k_rm)
 	else if(tmp >= num_edge)
 	{
 		tmp = tmp - num_edge;
-		ix0 = fills[tmp][0];iy0 = fills[tmp][1];iz0 = fills[tmp][2];
+		ix=ix0 = fills[tmp][0];iy=iy0 = fills[tmp][1];iz=iz0 = fills[tmp][2];
 		// index of new site
 		switch (xyz)
 		{
@@ -418,7 +418,7 @@ void cell :: hopping_run(double k_ad, double k_rm)
 		if(ix>=0 && iy>=0 && iz>=0 && ix<nx && iy<ny && iz<nz)
 		{
 			// remove
-			if(sites[ix][iy][iz].if_edge || sites[ix][iy][iz].if_hole)
+			if(sites[ix][iy][iz].if_edge)
 			{
 				if(rand()/(double)RAND_MAX < k_rm)
 				{
@@ -530,8 +530,8 @@ void cell :: print_hole(int ix, int iy, int iz)
 		print_hole(ix+1,iy,iz);
 		print_hole(ix,iy-1,iz);
 		print_hole(ix,iy+1,iz);
-		print_hole(ix,iy,iz-1);
-		print_hole(ix,iy,iz+1);
+//		print_hole(ix,iy,iz-1);
+//		print_hole(ix,iy,iz+1);
 	}
 }
 
