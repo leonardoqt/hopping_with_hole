@@ -3,6 +3,7 @@
 #include <string>
 #include <chrono>
 #include <stdlib.h>
+#include <math.h>
 #include "site.h"
 #include "cell.h"
 
@@ -26,6 +27,7 @@ int main()
 	double act_big, act_dis;
 	double k_in, k_out;
 	int n_single_set_run, n_tot_set_run;
+	double rate_single_set_run;
 	int if_heatmap;
 	string tmp;
 
@@ -40,7 +42,7 @@ int main()
 	getline(input,tmp);
 	input>>k_in>>k_out;
 	getline(input,tmp);
-	input>>n_single_set_run>>n_tot_set_run;
+	input>>rate_single_set_run>>n_tot_set_run;
 	getline(input,tmp);
 	input>>if_heatmap;
 	getline(input,tmp);
@@ -62,8 +64,10 @@ int main()
 	cout<<'['<<0<<'/'<<n_tot_set_run<<']'<<endl;
 	for(size_t t1=0; t1<n_tot_set_run; t1++)
 	{
+		n_single_set_run = ceil((cell1.return_fill()+cell1.return_edge())*rate_single_set_run);
 		cell1.hopping_run(k_in,k_out,n_single_set_run);
-		output<<(t1+1)*n_single_set_run<<'\t'<<cell1.return_fill_percent()<<endl;
+		//output<<(t1+1)*n_single_set_run<<'\t'<<cell1.return_fill_percent()<<endl;
+		output<<(t1+1)<<'\t'<<cell1.return_fill_percent()<<endl;
 		if(if_heatmap)
 			cell1.print_heatmap_z_half(heatmap);
 		cout<<"\e[A"<<'['<<t1+1<<'/'<<n_tot_set_run<<']'<<endl;
