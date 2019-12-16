@@ -36,9 +36,9 @@ public:
 	void activate_hole(int ix, int iy, int iz);		// auxiliary function
 	void activate_hole(double rmin, double dmin);	// make holes activated, if either the radius is greater than rmin or the center is close to surface or big holes
 	void assign_edge(int ix, int iy, int iz);		// find the edge sites
-	void assign_edge();		// find the edge sites, either is hole and are edge or is not hole but on the surface
-	void assign_edge_no_small(double rmin);			// do not allow small hole to have edge
-	void assign_edge_no_small_each(int index);		// assign edge to edge of large hole
+	void assign_edge();								// find the edge sites, either is hole and are edge or is not hole but on the surface
+	void assign_edge(double rmin, double dmin);		// assign edge by holes, not connected holes
+	void assign_edge_holes(int index);				// assign edge to edge of a single hole
 	//
 	int  count_edge();
 	int  count_capacity();

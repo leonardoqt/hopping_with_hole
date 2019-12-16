@@ -53,7 +53,7 @@ int main()
 	cell1.gen_hole_rand(n_big, r_big);
 //	cell1.activate_hole(act_big, act_dis);
 //	cell1.assign_edge();
-	cell1.assign_edge_no_small(act_big);
+	cell1.assign_edge(act_big, act_dis);
 	cell1.count_edge();
 	cell1.count_capacity();
 	cout<<"Average hole size: "<<cell1.count_average_hole_size()<<endl;

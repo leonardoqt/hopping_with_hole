@@ -268,7 +268,7 @@ void cell :: assign_edge()
 	clear_hole_iter();
 }
 
-void cell :: assign_edge_no_small(double rmin)
+void cell :: assign_edge(double rmin, double dmin)
 {
 	// clear edge info
 	for(size_t t1=0; t1<nx; t1++)
@@ -281,8 +281,29 @@ void cell :: assign_edge_no_small(double rmin)
 
 	// assign edge from hole
 	for(size_t t1=0; t1<num_hole; t1++)
+	{
+		// large hole
 		if(hole_radius[t1] > rmin)
-			assign_edge_no_small_each(t1);
+			assign_edge_holes(t1);
+		else
+		{
+			// hole close to wall
+			if(hole_center[t1][0]<=dmin || hole_center[t1][1]<=dmin || hole_center[t1][2]<=dmin || hole_center[t1][0]>=nx-1-dmin || hole_center[t1][1]>=ny-1-dmin || hole_center[t1][2]>=nz-1-dmin)
+				assign_edge_holes(t1);
+			// sites close to big hole
+			else
+			{
+				for(size_t t2=0; t2<num_hole;t2++)
+				{
+					if(hole_radius[t2] >= rmin && dis(hole_center[t1],hole_center[t2]) <= hole_radius[t2] + dmin)
+					{
+						assign_edge_holes(t1);
+						break;
+					}
+				}
+			}
+		}
+	}
 	// assign edge from wall
 	for(size_t t1=0; t1<nx; t1++)
 	for(size_t t2=0; t2<ny; t2++)
@@ -311,7 +332,7 @@ void cell :: assign_edge_no_small(double rmin)
 	clear_hole_iter();
 }
 
-void cell :: assign_edge_no_small_each(int index)
+void cell :: assign_edge_holes(int index)
 {
 	int ix = hole_center[index][0];
 	int iy = hole_center[index][1];
