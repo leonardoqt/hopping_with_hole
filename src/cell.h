@@ -37,6 +37,8 @@ public:
 	void activate_hole(double rmin, double dmin);	// make holes activated, if either the radius is greater than rmin or the center is close to surface or big holes
 	void assign_edge(int ix, int iy, int iz);		// find the edge sites
 	void assign_edge();		// find the edge sites, either is hole and are edge or is not hole but on the surface
+	void assign_edge_no_small(double rmin);			// do not allow small hole to have edge
+	void assign_edge_no_small_each(int index);		// assign edge to edge of large hole
 	//
 	int  count_edge();
 	int  count_capacity();

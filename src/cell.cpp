@@ -268,6 +268,71 @@ void cell :: assign_edge()
 	clear_hole_iter();
 }
 
+void cell :: assign_edge_no_small(double rmin)
+{
+	// clear edge info
+	for(size_t t1=0; t1<nx; t1++)
+	for(size_t t2=0; t2<ny; t2++)
+	for(size_t t3=0; t3<nz; t3++)
+		sites[t1][t2][t3].if_edge = 0;
+	
+	// clear if_iter info
+	clear_hole_iter();
+
+	// assign edge from hole
+	for(size_t t1=0; t1<num_hole; t1++)
+		if(hole_radius[t1] > rmin)
+			assign_edge_no_small_each(t1);
+	// assign edge from wall
+	for(size_t t1=0; t1<nx; t1++)
+	for(size_t t2=0; t2<ny; t2++)
+	{
+		if(!sites[t1][t2][0].if_hole)
+			sites[t1][t2][0].if_edge = 1;
+		if(!sites[t1][t2][nz-1].if_hole)
+			sites[t1][t2][nz-1].if_edge = 1;
+	}
+	for(size_t t1=0; t1<nx; t1++)
+	for(size_t t3=0; t3<nz; t3++)
+	{
+		if(!sites[t1][0][t3].if_hole)
+			sites[t1][0][t3].if_edge = 1;
+		if(!sites[t1][ny-1][t3].if_hole)
+			sites[t1][ny-1][t3].if_edge = 1;
+	}
+	for(size_t t2=0; t2<ny; t2++)
+	for(size_t t3=0; t3<nz; t3++)
+	{
+		if(!sites[0][t2][t3].if_hole)
+			sites[0][t2][t3].if_edge = 1;
+		if(!sites[nx-1][t2][t3].if_hole)
+			sites[nx-1][t2][t3].if_edge = 1;
+	}
+	clear_hole_iter();
+}
+
+void cell :: assign_edge_no_small_each(int index)
+{
+	int ix = hole_center[index][0];
+	int iy = hole_center[index][1];
+	int iz = hole_center[index][2];
+	double rr = hole_radius[index];
+	int x_min = max(1.0, ix-ceil(rr));
+	int y_min = max(1.0, iy-ceil(rr));
+	int z_min = max(1.0, iz-ceil(rr));
+	int x_max = min(ix+ceil(rr)+1, (double)(nx-1));
+	int y_max = min(iy+ceil(rr)+1, (double)(ny-1));
+	int z_max = min(iz+ceil(rr)+1, (double)(nz-1));
+	for(size_t t1=x_min; t1<x_max; t1++)
+	for(size_t t2=y_min; t2<y_max; t2++)
+	for(size_t t3=z_min; t3<z_max; t3++)
+	{
+		if((t1-ix)*(t1-ix)+(t2-iy)*(t2-iy)+(t3-iz)*(t3-iz) < rr*rr && sites[t1][t2][t3].if_hole)
+		if(t1>1&&!sites[t1-1][t2][t3].if_hole || t1<nx-2&&!sites[t1+1][t2][t3].if_hole || t2>1&&!sites[t1][t2-1][t3].if_hole || t2<ny-2&&!sites[t1][t2+1][t3].if_hole || t3>1&&!sites[t1][t2][t3-1].if_hole || t3<nz-2&&!sites[t1][t2][t3+1].if_hole)
+			sites[t1][t2][t3].if_edge = 1;
+	}
+}
+
 int cell :: count_edge()
 {
 	num_edge = 0;
