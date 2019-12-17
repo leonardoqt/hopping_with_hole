@@ -55,10 +55,12 @@ int main()
 //	cell1.assign_edge();
 	cell1.assign_edge(act_big, act_dis);
 	cell1.count_edge();
+	cell1.count_surface();
 	cell1.count_capacity();
 	cout<<"Average hole size: "<<cell1.count_average_hole_size()<<endl;
 	cout<<"Capacity: "<<cell1.return_capacity()<<endl;
 	cout<<"Number of interface sites: "<<cell1.return_edge()<<endl;
+	cout<<"Size of surface: "<<cell1.return_surface()<<endl;
 	output.open("diffuse.out");
 	if(if_heatmap)
 		heatmap.open("heatmap.dat");

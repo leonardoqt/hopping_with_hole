@@ -20,6 +20,7 @@ private:
 	int num_capacity;									// number of total to-be-filled sites
 	int num_disconnected_hole;							// number of disconnected holes
 	int num_site_hole;									// number of sites that are holes
+	int num_surface;									// number of surface
 	std::vector<std::vector<int> > hole_center;			// hole centers before merge
 	std::vector<std::vector<int> > edges;				// edge sites
 	std::vector<std::vector<int> > fills;				// edge sites
@@ -42,6 +43,7 @@ public:
 	//
 	int  count_edge();
 	int  count_capacity();
+	int count_surface();
 	double count_average_hole_size();
 	//
 	void hopping_run(double k_ad, double k_rm);
@@ -51,6 +53,7 @@ public:
 	double return_fill_percent();
 	int return_capacity();
 	int return_edge();
+	int return_surface();
 	void print_fill(std::ofstream& out);
 	void print_heatmap(std::ofstream& out);
 	void print_heatmap_z_half(std::ofstream& out);

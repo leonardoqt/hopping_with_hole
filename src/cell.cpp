@@ -381,6 +381,20 @@ int cell :: count_capacity()
 	return num_capacity;
 }
 
+int cell :: count_surface()
+{
+	num_surface = 0;
+	for(size_t t1=1; t1<nx-1; t1++)
+	for(size_t t2=1; t2<ny-1; t2++)
+	for(size_t t3=1; t3<nz-1; t3++)
+	{
+		if(!sites[t1][t2][t3].if_hole)
+		if(sites[t1-1][t2][t3].if_hole||sites[t1-1][t2][t3].if_edge||sites[t1+1][t2][t3].if_hole||sites[t1+1][t2][t3].if_edge || sites[t1][t2-1][t3].if_hole||sites[t1][t2-1][t3].if_edge||sites[t1][t2+1][t3].if_hole||sites[t1][t2+1][t3].if_edge || sites[t1][t2][t3-1].if_hole||sites[t1][t2][t3-1].if_edge||sites[t1][t2][t3+1].if_hole||sites[t1][t2][t3+1].if_edge)
+			num_surface++;
+	}
+	return num_surface;
+}
+
 double cell :: count_average_hole_size()
 {
 	num_disconnected_hole = 0;
@@ -552,6 +566,11 @@ int cell :: return_edge()
 double cell :: return_fill_percent()
 {
 	return num_fill/(double)num_capacity;
+}
+
+int cell :: return_surface()
+{
+	return num_surface;
 }
 
 void cell :: print_fill(ofstream& out)
